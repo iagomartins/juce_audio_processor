@@ -1,0 +1,74 @@
+{
+  "name": "juce-audio-processor",
+  "version": "1.0.0",
+  "description": "JUCE audio processor native addon for Electron DJ applications",
+  "main": "index.js",
+  "keywords": [
+    "juce",
+    "audio",
+    "processor",
+    "electron",
+    "native",
+    "addon",
+    "dj",
+    "audio-effects",
+    "flanger",
+    "filter",
+    "pitch-shift"
+  ],
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/yourusername/juce-audio-processor#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/juce-audio-processor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/juce-audio-processor/issues"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "electron": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "cmake-js build",
+    "install": "cmake-js build",
+    "rebuild": "cmake-js rebuild",
+    "prepublishOnly": "npm run build",
+    "test": "node test/test.js",
+    "example": "electron example/electron-example.js",
+    "clean": "rimraf build"
+  },
+  "dependencies": {
+    "node-addon-api": "^7.1.1"
+  },
+  "devDependencies": {
+    "cmake-js": "^7.0.0",
+    "electron": "^37.3.1",
+    "rimraf": "^5.0.0"
+  },
+  "cmake-js": {
+    "runtime": "electron",
+    "runtimeVersion": "37.3.1",
+    "arch": "x64",
+    "generator": "Visual Studio 16 2019",
+    "generatorPlatform": "x64"
+  },
+  "files": [
+    "index.js",
+    "src/",
+    "CMakeLists.txt",
+    "build/Release/juce_audio_processor.node",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "os": [
+    "win32",
+    "darwin",
+    "linux"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ]
+}

@@ -1,0 +1,40 @@
+# Build artifacts
+build/
+!build/Release/juce_audio_processor.node
+
+# Source files (keep only what's needed)
+src/
+!src/*.h
+
+# Development files
+.vscode/
+.git/
+.gitignore
+*.vcxproj
+*.vcxproj.filters
+*.sln
+*.filters
+
+# Documentation
+docs/
+examples/
+extras/
+
+# Test files
+test/
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# IDE files
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dependencies
+node_modules/
