@@ -16,15 +16,15 @@
     "filter",
     "pitch-shift"
   ],
-  "author": "Your Name <your.email@example.com>",
+  "author": "Iago Martins <iagomartinsgamedesign@gmail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/yourusername/juce-audio-processor#readme",
+  "homepage": "https://github.com/iagomartins/juce-audio-processor#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/juce-audio-processor.git"
+    "url": "git+https://github.com/iagomartins/juce-audio-processor.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/juce-audio-processor/issues"
+    "url": "https://github.com/iagomartins/juce-audio-processor/issues"
   },
   "engines": {
     "node": ">=14.0.0",
@@ -40,7 +40,8 @@
     "clean": "rimraf build"
   },
   "dependencies": {
-    "node-addon-api": "^7.1.1"
+    "node-addon-api": "^7.1.1",
+    "cmake": "^3.25.0"
   },
   "devDependencies": {
     "cmake-js": "^7.0.0",
