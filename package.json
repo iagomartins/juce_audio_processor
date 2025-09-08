@@ -31,16 +31,12 @@
   },
   "scripts": {
     "build": "cmake-js build",
-    "build:electron": "cmake-js build --runtime electron --runtime-version 37.4.0",
-    "build:node": "cmake-js build --runtime node --runtime-version 18.0.0",
-    "install": "npm run check-cmake && npm run build",
+    "install": "cmake-js build",
     "rebuild": "cmake-js rebuild",
     "prepublishOnly": "npm run build",
     "test": "node test/test.js",
     "example": "node example/node-example.js",
-    "clean": "rimraf build",
-    "check-cmake": "node -e \"try { require('child_process').execSync('cmake --version', {stdio:'ignore'}); console.log('✓ CMake found'); } catch(e) { console.log('⚠ CMake not found. Please install CMake from https://cmake.org/download/'); process.exit(1); }\"",
-    "build:auto": "node scripts/build-auto.js"
+    "clean": "rimraf build"
   },
   "dependencies": {
     "node-addon-api": "^7.1.1",
