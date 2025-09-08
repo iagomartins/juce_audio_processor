@@ -1,12 +1,12 @@
 # JUCE Audio Processor
 
-A high-performance native audio processor built with JUCE for Electron applications, specifically designed for DJ software.
+A high-performance native audio processor built with JUCE for Node.js applications, specifically designed for DJ software and audio processing.
 
 ## Features
 
 - **Real-time Audio Processing**: Built on JUCE's industry-standard audio processing framework
 - **DJ Effects**: Includes flanger, filter, pitch shifting, and volume control
-- **Electron Compatible**: Designed specifically for Electron applications
+- **Node.js Compatible**: Designed for Node.js applications
 - **Cross-platform**: Supports Windows, macOS, and Linux
 - **High Performance**: Native C++ implementation for low-latency audio processing
 
@@ -69,7 +69,6 @@ processor.processAudio(audioBuffer);
 ## Requirements
 
 - Node.js 14.0.0 or higher
-- Electron 20.0.0 or higher
 - CMake 3.15 or higher
 - C++17 compatible compiler
 
