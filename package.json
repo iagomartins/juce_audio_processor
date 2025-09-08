@@ -1,6 +1,6 @@
 {
   "name": "juce-audio-processor",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "JUCE audio processor native addon for Electron DJ applications",
   "main": "index.js",
   "keywords": [
