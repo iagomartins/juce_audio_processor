@@ -1,6 +1,6 @@
 {
   "name": "juce-audio-processor",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "JUCE audio processor native addon for Node.js applications",
   "main": "index.js",
   "keywords": [
