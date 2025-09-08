@@ -31,16 +31,16 @@
   },
   "scripts": {
     "build": "cmake-js build",
-    "install": "cmake-js build",
+    "install": "npm run check-cmake && cmake-js build",
     "rebuild": "cmake-js rebuild",
     "prepublishOnly": "npm run build",
     "test": "node test/test.js",
     "example": "node example/node-example.js",
-    "clean": "rimraf build"
+    "clean": "rimraf build",
+    "check-cmake": "node -e \"try { require('child_process').execSync('cmake --version', {stdio:'ignore'}); console.log('✓ CMake found'); } catch(e) { console.log('⚠ CMake not found. Please install CMake from https://cmake.org/download/'); process.exit(1); }\""
   },
   "dependencies": {
-    "node-addon-api": "^7.1.1",
-    "cmake": "^3.25.0"
+    "node-addon-api": "^7.1.1"
   },
   "devDependencies": {
     "cmake-js": "^7.0.0",
