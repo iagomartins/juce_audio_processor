@@ -32,7 +32,7 @@ function getBinaryPath() {
     if (!fs.existsSync(addonPath)) {
       throw new Error(`Native addon file not found at ${addonPath}. Please run 'npm run build' first.`);
     } else {
-      throw new Error(`Failed to load native addon: ${err.message}`);
+      throw new Error(`Failed to load native addon: ${err.message}. This usually means the addon was built for a different Node.js/Electron version. Try running 'npm run rebuild'.`);
     }
   }
 }
