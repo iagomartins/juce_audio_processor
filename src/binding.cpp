@@ -51,12 +51,24 @@ Napi::Object JUCEAudioProcessorWrapper::Init(Napi::Env env, Napi::Object exports
 JUCEAudioProcessorWrapper::JUCEAudioProcessorWrapper(const Napi::CallbackInfo& info)
     : Napi::ObjectWrap<JUCEAudioProcessorWrapper>(info)
 {
-    processor = new JUCEAudioProcessor();
+    try {
+        // Initialize JUCE safely for Electron
+        juce::initialiseJuce_GUI();
+        processor = new JUCEAudioProcessor();
+    } catch (const std::exception& e) {
+        Napi::Error::New(info.Env(), "Failed to initialize JUCE: " + std::string(e.what())).ThrowAsJavaScriptException();
+        return;
+    }
 }
 
 JUCEAudioProcessorWrapper::~JUCEAudioProcessorWrapper()
 {
-    delete processor;
+    try {
+        delete processor;
+        juce::shutdownJuce_GUI();
+    } catch (const std::exception& e) {
+        // Silently handle cleanup errors
+    }
 }
 
 Napi::Value JUCEAudioProcessorWrapper::SetPitchBend(const Napi::CallbackInfo& info)
@@ -68,8 +80,13 @@ Napi::Value JUCEAudioProcessorWrapper::SetPitchBend(const Napi::CallbackInfo& in
         return env.Null();
     }
     
-    float semitones = info[0].As<Napi::Number>().FloatValue();
-    processor->setPitchBend(semitones);
+    try {
+        float semitones = info[0].As<Napi::Number>().FloatValue();
+        processor->setPitchBend(semitones);
+    } catch (const std::exception& e) {
+        Napi::Error::New(env, "Error in setPitchBend: " + std::string(e.what())).ThrowAsJavaScriptException();
+        return env.Null();
+    }
     
     return env.Null();
 }
@@ -83,8 +100,13 @@ Napi::Value JUCEAudioProcessorWrapper::SetFlangerEnabled(const Napi::CallbackInf
         return env.Null();
     }
     
-    bool enabled = info[0].As<Napi::Boolean>().Value();
-    processor->setFlangerEnabled(enabled);
+    try {
+        bool enabled = info[0].As<Napi::Boolean>().Value();
+        processor->setFlangerEnabled(enabled);
+    } catch (const std::exception& e) {
+        Napi::Error::New(env, "Error in setFlangerEnabled: " + std::string(e.what())).ThrowAsJavaScriptException();
+        return env.Null();
+    }
     
     return env.Null();
 }
@@ -98,8 +120,13 @@ Napi::Value JUCEAudioProcessorWrapper::SetFlangerRate(const Napi::CallbackInfo& 
         return env.Null();
     }
     
-    float rate = info[0].As<Napi::Number>().FloatValue();
-    processor->setFlangerRate(rate);
+    try {
+        float rate = info[0].As<Napi::Number>().FloatValue();
+        processor->setFlangerRate(rate);
+    } catch (const std::exception& e) {
+        Napi::Error::New(env, "Error in setFlangerRate: " + std::string(e.what())).ThrowAsJavaScriptException();
+        return env.Null();
+    }
     
     return env.Null();
 }
@@ -113,8 +140,13 @@ Napi::Value JUCEAudioProcessorWrapper::SetFlangerDepth(const Napi::CallbackInfo&
         return env.Null();
     }
     
-    float depth = info[0].As<Napi::Number>().FloatValue();
-    processor->setFlangerDepth(depth);
+    try {
+        float depth = info[0].As<Napi::Number>().FloatValue();
+        processor->setFlangerDepth(depth);
+    } catch (const std::exception& e) {
+        Napi::Error::New(env, "Error in setFlangerDepth: " + std::string(e.what())).ThrowAsJavaScriptException();
+        return env.Null();
+    }
     
     return env.Null();
 }
@@ -128,8 +160,13 @@ Napi::Value JUCEAudioProcessorWrapper::SetFilterCutoff(const Napi::CallbackInfo&
         return env.Null();
     }
     
-    float cutoff = info[0].As<Napi::Number>().FloatValue();
-    processor->setFilterCutoff(cutoff);
+    try {
+        float cutoff = info[0].As<Napi::Number>().FloatValue();
+        processor->setFilterCutoff(cutoff);
+    } catch (const std::exception& e) {
+        Napi::Error::New(env, "Error in setFilterCutoff: " + std::string(e.what())).ThrowAsJavaScriptException();
+        return env.Null();
+    }
     
     return env.Null();
 }
@@ -143,8 +180,13 @@ Napi::Value JUCEAudioProcessorWrapper::SetFilterResonance(const Napi::CallbackIn
         return env.Null();
     }
     
-    float resonance = info[0].As<Napi::Number>().FloatValue();
-    processor->setFilterResonance(resonance);
+    try {
+        float resonance = info[0].As<Napi::Number>().FloatValue();
+        processor->setFilterResonance(resonance);
+    } catch (const std::exception& e) {
+        Napi::Error::New(env, "Error in setFilterResonance: " + std::string(e.what())).ThrowAsJavaScriptException();
+        return env.Null();
+    }
     
     return env.Null();
 }
@@ -158,8 +200,13 @@ Napi::Value JUCEAudioProcessorWrapper::SetJogWheelPosition(const Napi::CallbackI
         return env.Null();
     }
     
-    float position = info[0].As<Napi::Number>().FloatValue();
-    processor->setJogWheelPosition(position);
+    try {
+        float position = info[0].As<Napi::Number>().FloatValue();
+        processor->setJogWheelPosition(position);
+    } catch (const std::exception& e) {
+        Napi::Error::New(env, "Error in setJogWheelPosition: " + std::string(e.what())).ThrowAsJavaScriptException();
+        return env.Null();
+    }
     
     return env.Null();
 }
@@ -173,8 +220,13 @@ Napi::Value JUCEAudioProcessorWrapper::SetVolume(const Napi::CallbackInfo& info)
         return env.Null();
     }
     
-    float volume = info[0].As<Napi::Number>().FloatValue();
-    processor->setVolume(volume);
+    try {
+        float volume = info[0].As<Napi::Number>().FloatValue();
+        processor->setVolume(volume);
+    } catch (const std::exception& e) {
+        Napi::Error::New(env, "Error in setVolume: " + std::string(e.what())).ThrowAsJavaScriptException();
+        return env.Null();
+    }
     
     return env.Null();
 }
@@ -188,8 +240,14 @@ Napi::Value JUCEAudioProcessorWrapper::ProcessAudio(const Napi::CallbackInfo& in
         return env.Null();
     }
     
-    // For now, just return success - actual audio processing would go here
-    // In a real implementation, you'd process the audio buffer
+    try {
+        // For now, just return success - actual audio processing would go here
+        // In a real implementation, you'd process the audio buffer
+    } catch (const std::exception& e) {
+        Napi::Error::New(env, "Error in processAudio: " + std::string(e.what())).ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    
     return env.Null();
 }
 
