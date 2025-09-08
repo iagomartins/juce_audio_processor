@@ -1,13 +1,13 @@
 {
   "name": "juce-audio-processor",
   "version": "1.0.3",
-  "description": "JUCE audio processor native addon for Electron DJ applications",
+  "description": "JUCE audio processor native addon for Node.js applications",
   "main": "index.js",
   "keywords": [
     "juce",
     "audio",
     "processor",
-    "electron",
+    "node",
     "native",
     "addon",
     "dj",
@@ -40,10 +40,10 @@
     "check-cmake": "node -e \"try { require('child_process').execSync('cmake --version', {stdio:'ignore'}); console.log('✓ CMake found'); } catch(e) { console.log('⚠ CMake not found. Please install CMake from https://cmake.org/download/'); process.exit(1); }\""
   },
   "dependencies": {
-    "node-addon-api": "^7.1.1"
+    "node-addon-api": "^7.1.1",
+    "cmake-js": "^7.0.0"
   },
   "devDependencies": {
-    "cmake-js": "^7.0.0",
     "rimraf": "^5.0.0"
   },
   "cmake-js": {
