@@ -30,7 +30,14 @@ function buildForRuntime(runtime, version) {
   console.log(`Building for ${runtime} ${version}...`);
   
   try {
-    const command = `cmake-js build --runtime ${runtime} --runtime-version ${version}`;
+    // First, try to clean any existing build
+    const buildDir = path.join(__dirname, '..', 'build');
+    if (fs.existsSync(buildDir)) {
+      console.log('Cleaning existing build directory...');
+      fs.rmSync(buildDir, { recursive: true, force: true });
+    }
+    
+    const command = `cmake-js build --runtime ${runtime} --runtime-version ${version} --verbose`;
     console.log(`Running: ${command}`);
     
     execSync(command, { 
@@ -59,16 +66,22 @@ function main() {
   } else {
     console.log('⚠ Build failed, trying fallback...');
     
-    // Fallback to Node.js
-    if (runtimeInfo.runtime !== 'node') {
-      console.log('Trying Node.js fallback...');
-      if (buildForRuntime('node', '18.0.0')) {
+    // Try different Node.js versions as fallback
+    const fallbackVersions = ['18.0.0', '16.0.0', '20.0.0'];
+    
+    for (const version of fallbackVersions) {
+      console.log(`Trying Node.js ${version} fallback...`);
+      if (buildForRuntime('node', version)) {
         console.log('✓ Fallback build completed');
         process.exit(0);
       }
     }
     
     console.error('✗ All build attempts failed');
+    console.error('Please check:');
+    console.error('1. CMake is installed and in PATH');
+    console.error('2. Visual Studio Build Tools are installed');
+    console.error('3. Node.js version is compatible');
     process.exit(1);
   }
 }
