@@ -6,24 +6,44 @@ function getBinaryPath() {
   const platform = os.platform();
   const arch = os.arch();
   
-  // For Electron, we need to handle the specific runtime
+  console.log('Platform:', platform, 'Architecture:', arch);
+  console.log('Node version:', process.version);
   if (process.versions.electron) {
-    const electronVersion = process.versions.electron;
-    const electronArch = arch === 'x64' ? 'x64' : arch;
-    
-    // Try to load the pre-built binary for the specific Electron version
-    try {
-      return require(`./build/Release/juce_audio_processor.node`);
-    } catch (err) {
-      // Fallback to building from source
-      console.warn('Pre-built binary not found, building from source...');
-      return require('./build/Release/juce_audio_processor.node');
-    }
+    console.log('Electron version:', process.versions.electron);
   }
   
-  // For regular Node.js
-  return require('./build/Release/juce_audio_processor.node');
+  // Try to load the pre-built binary
+  try {
+    const addonPath = path.join(__dirname, 'build', 'Release', 'juce_audio_processor.node');
+    console.log('Trying to load:', addonPath);
+    
+    const addon = require(addonPath);
+    console.log('✓ Native addon loaded successfully');
+    console.log('Available exports:', Object.keys(addon));
+    
+    return addon;
+  } catch (err) {
+    console.error('✗ Failed to load native addon:', err.message);
+    console.error('Stack trace:', err.stack);
+    
+    // Check if the file exists
+    const fs = require('fs');
+    const addonPath = path.join(__dirname, 'build', 'Release', 'juce_audio_processor.node');
+    if (!fs.existsSync(addonPath)) {
+      throw new Error(`Native addon file not found at ${addonPath}. Please run 'npm run build' first.`);
+    } else {
+      throw new Error(`Failed to load native addon: ${err.message}`);
+    }
+  }
 }
 
-// Export the native addon
-module.exports = getBinaryPath();
+// Load the native addon
+const nativeAddon = getBinaryPath();
+
+// Export the JUCEAudioProcessor class
+if (nativeAddon.JUCEAudioProcessor) {
+  module.exports = nativeAddon.JUCEAudioProcessor;
+} else {
+  console.error('Available exports:', Object.keys(nativeAddon));
+  throw new Error('JUCEAudioProcessor not found in native addon exports');
+}
