@@ -33,7 +33,7 @@
     "build": "cmake-js build",
     "build:electron": "cmake-js build --runtime electron --runtime-version 37.4.0",
     "build:node": "cmake-js build --runtime node --runtime-version 18.0.0",
-    "install": "npm run check-cmake && npm run build:auto",
+    "install": "npm run check-cmake && npm run build",
     "rebuild": "cmake-js rebuild",
     "prepublishOnly": "npm run build",
     "test": "node test/test.js",
