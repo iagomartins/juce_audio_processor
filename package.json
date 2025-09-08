@@ -48,8 +48,8 @@
     "rimraf": "^5.0.0"
   },
   "cmake-js": {
-    "runtime": "node",
-    "runtimeVersion": "18.0.0",
+    "runtime": "electron",
+    "runtimeVersion": "37.3.1",
     "arch": "x64",
     "generator": "Visual Studio 17 2022",
     "generatorPlatform": "x64"
