@@ -1,11 +1,12 @@
-const JUCEAudioProcessor = require('../index');
+const JUCEAudioProcessor = require("../index");
 
-console.log('Testing JUCE Audio Processor...');
+console.log("Testing JUCE Audio Processor...");
 
 try {
   // Create a new processor instance
   const processor = new JUCEAudioProcessor();
-  console.log('✓ Processor created successfully');
+  console.log("✓ Processor created successfully");
+  console.log("✓ Initialized:", processor.isInitialized());
 
   // Test basic functionality
   processor.setVolume(0.8);
@@ -17,10 +18,9 @@ try {
   processor.setPitchBend(2.0);
   processor.setJogWheelPosition(0.5);
 
-  console.log('✓ All methods called successfully');
-  console.log('✓ JUCE Audio Processor is working correctly!');
-
+  console.log("✓ All methods called successfully");
+  console.log("✓ JUCE Audio Processor is working correctly!");
 } catch (error) {
-  console.error('✗ Error testing processor:', error.message);
+  console.error("✗ Error testing processor:", error.message);
   process.exit(1);
 }

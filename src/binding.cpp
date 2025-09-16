@@ -11,6 +11,10 @@ public:
 private:
     static Napi::FunctionReference constructor;
     JUCEAudioProcessor* processor;
+    bool isInitialized;
+    
+    // Add the missing method declaration
+    void ensureInitialized();
     
     Napi::Value SetPitchBend(const Napi::CallbackInfo& info);
     Napi::Value SetFlangerEnabled(const Napi::CallbackInfo& info);
@@ -21,6 +25,7 @@ private:
     Napi::Value SetJogWheelPosition(const Napi::CallbackInfo& info);
     Napi::Value SetVolume(const Napi::CallbackInfo& info);
     Napi::Value ProcessAudio(const Napi::CallbackInfo& info);
+    Napi::Value IsInitialized(const Napi::CallbackInfo& info);
 };
 
 Napi::FunctionReference JUCEAudioProcessorWrapper::constructor;
@@ -38,7 +43,8 @@ Napi::Object JUCEAudioProcessorWrapper::Init(Napi::Env env, Napi::Object exports
         InstanceMethod("setFilterResonance", &JUCEAudioProcessorWrapper::SetFilterResonance),
         InstanceMethod("setJogWheelPosition", &JUCEAudioProcessorWrapper::SetJogWheelPosition),
         InstanceMethod("setVolume", &JUCEAudioProcessorWrapper::SetVolume),
-        InstanceMethod("processAudio", &JUCEAudioProcessorWrapper::ProcessAudio)
+        InstanceMethod("processAudio", &JUCEAudioProcessorWrapper::ProcessAudio),
+        InstanceMethod("isInitialized", &JUCEAudioProcessorWrapper::IsInitialized)
     });
 
     constructor = Napi::Persistent(func);
@@ -49,26 +55,49 @@ Napi::Object JUCEAudioProcessorWrapper::Init(Napi::Env env, Napi::Object exports
 }
 
 JUCEAudioProcessorWrapper::JUCEAudioProcessorWrapper(const Napi::CallbackInfo& info)
-    : Napi::ObjectWrap<JUCEAudioProcessorWrapper>(info)
+    : Napi::ObjectWrap<JUCEAudioProcessorWrapper>(info), processor(nullptr), isInitialized(false)
 {
+    Napi::Env env = info.Env();
+    
     try {
-        // Initialize JUCE safely for Electron
-        juce::initialiseJuce_GUI();
-        processor = new JUCEAudioProcessor();
+        // Don't initialize JUCE immediately - do it lazily
+        processor = nullptr;
+        isInitialized = false;
     } catch (const std::exception& e) {
-        Napi::Error::New(info.Env(), "Failed to initialize JUCE: " + std::string(e.what())).ThrowAsJavaScriptException();
-        return;
+        Napi::Error::New(env, "Failed to create JUCE wrapper: " + std::string(e.what())).ThrowAsJavaScriptException();
     }
 }
 
 JUCEAudioProcessorWrapper::~JUCEAudioProcessorWrapper()
 {
     try {
-        delete processor;
-        juce::shutdownJuce_GUI();
+        if (processor) {
+            delete processor;
+            processor = nullptr;
+        }
+        isInitialized = false;
     } catch (const std::exception& e) {
         // Silently handle cleanup errors
     }
+}
+
+// Lazy initialization method
+void JUCEAudioProcessorWrapper::ensureInitialized() {
+    if (!isInitialized) {
+        try {
+            // Initialize JUCE only when needed
+            juce::initialiseJuce_GUI();
+            processor = new JUCEAudioProcessor();
+            isInitialized = true;
+        } catch (const std::exception& e) {
+            throw std::runtime_error("Failed to initialize JUCE: " + std::string(e.what()));
+        }
+    }
+}
+
+Napi::Value JUCEAudioProcessorWrapper::IsInitialized(const Napi::CallbackInfo& info)
+{
+    return Napi::Boolean::New(info.Env(), isInitialized);
 }
 
 Napi::Value JUCEAudioProcessorWrapper::SetPitchBend(const Napi::CallbackInfo& info)
@@ -81,6 +110,7 @@ Napi::Value JUCEAudioProcessorWrapper::SetPitchBend(const Napi::CallbackInfo& in
     }
     
     try {
+        ensureInitialized();
         float semitones = info[0].As<Napi::Number>().FloatValue();
         processor->setPitchBend(semitones);
     } catch (const std::exception& e) {
@@ -101,6 +131,7 @@ Napi::Value JUCEAudioProcessorWrapper::SetFlangerEnabled(const Napi::CallbackInf
     }
     
     try {
+        ensureInitialized();
         bool enabled = info[0].As<Napi::Boolean>().Value();
         processor->setFlangerEnabled(enabled);
     } catch (const std::exception& e) {
@@ -121,6 +152,7 @@ Napi::Value JUCEAudioProcessorWrapper::SetFlangerRate(const Napi::CallbackInfo& 
     }
     
     try {
+        ensureInitialized();
         float rate = info[0].As<Napi::Number>().FloatValue();
         processor->setFlangerRate(rate);
     } catch (const std::exception& e) {
@@ -141,6 +173,7 @@ Napi::Value JUCEAudioProcessorWrapper::SetFlangerDepth(const Napi::CallbackInfo&
     }
     
     try {
+        ensureInitialized();
         float depth = info[0].As<Napi::Number>().FloatValue();
         processor->setFlangerDepth(depth);
     } catch (const std::exception& e) {
@@ -161,6 +194,7 @@ Napi::Value JUCEAudioProcessorWrapper::SetFilterCutoff(const Napi::CallbackInfo&
     }
     
     try {
+        ensureInitialized();
         float cutoff = info[0].As<Napi::Number>().FloatValue();
         processor->setFilterCutoff(cutoff);
     } catch (const std::exception& e) {
@@ -181,6 +215,7 @@ Napi::Value JUCEAudioProcessorWrapper::SetFilterResonance(const Napi::CallbackIn
     }
     
     try {
+        ensureInitialized();
         float resonance = info[0].As<Napi::Number>().FloatValue();
         processor->setFilterResonance(resonance);
     } catch (const std::exception& e) {
@@ -201,6 +236,7 @@ Napi::Value JUCEAudioProcessorWrapper::SetJogWheelPosition(const Napi::CallbackI
     }
     
     try {
+        ensureInitialized();
         float position = info[0].As<Napi::Number>().FloatValue();
         processor->setJogWheelPosition(position);
     } catch (const std::exception& e) {
@@ -221,6 +257,7 @@ Napi::Value JUCEAudioProcessorWrapper::SetVolume(const Napi::CallbackInfo& info)
     }
     
     try {
+        ensureInitialized();
         float volume = info[0].As<Napi::Number>().FloatValue();
         processor->setVolume(volume);
     } catch (const std::exception& e) {
@@ -241,8 +278,8 @@ Napi::Value JUCEAudioProcessorWrapper::ProcessAudio(const Napi::CallbackInfo& in
     }
     
     try {
+        ensureInitialized();
         // For now, just return success - actual audio processing would go here
-        // In a real implementation, you'd process the audio buffer
     } catch (const std::exception& e) {
         Napi::Error::New(env, "Error in processAudio: " + std::string(e.what())).ThrowAsJavaScriptException();
         return env.Null();
