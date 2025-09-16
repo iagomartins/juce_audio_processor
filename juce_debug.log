@@ -1,0 +1,87 @@
+[2025-09-16T20:53:19.571Z] [INFO] Starting native addon loading process...
+[2025-09-16T20:53:19.598Z] [INFO] Platform: win32, Architecture: x64
+[2025-09-16T20:53:19.601Z] [INFO] Node version: v22.19.0
+[2025-09-16T20:53:19.604Z] [INFO] Electron version: 38.1.0
+[2025-09-16T20:53:19.607Z] [INFO] Electron ABI: 139
+[2025-09-16T20:53:19.609Z] [INFO] Attempting to load Electron native addon...
+[2025-09-16T20:53:19.613Z] [ERROR] ✗ Failed to load Electron native addon: Cannot find module './build/Release/juce_audio_processor.node'
+Require stack:
+- C:\Users\Avell\Documents\juce_audio_processor\index.js
+- C:\Users\Avell\Documents\juce_audio_processor\test\electron-test.js
+[2025-09-16T20:53:19.617Z] [ERROR] Error details: Error: Cannot find module './build/Release/juce_audio_processor.node'
+Require stack:
+- C:\Users\Avell\Documents\juce_audio_processor\index.js
+- C:\Users\Avell\Documents\juce_audio_processor\test\electron-test.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1390:15)
+    at s._resolveFilename (node:electron/js2c/browser_init:2:130206)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1032:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1037:22)
+    at Module._load (node:internal/modules/cjs/loader:1199:37)
+    at c._load (node:electron/js2c/node_init:2:17993)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.require (node:internal/modules/cjs/loader:1470:12)
+    at require (node:internal/modules/helpers:147:16)
+[2025-09-16T20:58:01.518Z] [INFO] Starting native addon loading process...
+[2025-09-16T20:58:01.521Z] [INFO] Platform: win32, Architecture: x64
+[2025-09-16T20:58:01.522Z] [INFO] Node version: v22.19.0
+[2025-09-16T20:58:01.522Z] [INFO] Electron version: 38.1.0
+[2025-09-16T20:58:01.523Z] [INFO] Electron ABI: 139
+[2025-09-16T20:58:01.523Z] [INFO] Attempting to load Electron native addon...
+[2025-09-16T21:25:00.248Z] [INFO] Starting native addon loading process...
+[2025-09-16T21:25:00.251Z] [INFO] Platform: win32, Architecture: x64
+[2025-09-16T21:25:00.252Z] [INFO] Node version: v22.19.0
+[2025-09-16T21:25:00.253Z] [INFO] Electron version: 38.1.0
+[2025-09-16T21:25:00.253Z] [INFO] Electron ABI: 139
+[2025-09-16T21:25:00.254Z] [INFO] Attempting to load Electron native addon...
+[2025-09-16T21:25:00.255Z] [ERROR] ✗ Failed to load Electron native addon: Cannot find module './build/Release/juce_audio_processor.node'
+Require stack:
+- C:\Users\Avell\Documents\juce_audio_processor\index.js
+- C:\Users\Avell\Documents\juce_audio_processor\test\electron-test.js
+[2025-09-16T21:25:00.258Z] [ERROR] Error details: Error: Cannot find module './build/Release/juce_audio_processor.node'
+Require stack:
+- C:\Users\Avell\Documents\juce_audio_processor\index.js
+- C:\Users\Avell\Documents\juce_audio_processor\test\electron-test.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1390:15)
+    at s._resolveFilename (node:electron/js2c/browser_init:2:130206)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1032:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1037:22)
+    at Module._load (node:internal/modules/cjs/loader:1199:37)
+    at c._load (node:electron/js2c/node_init:2:17993)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.require (node:internal/modules/cjs/loader:1470:12)
+    at require (node:internal/modules/helpers:147:16)
+[2025-09-16T21:29:47.312Z] [INFO] Starting native addon loading process...
+[2025-09-16T21:29:47.314Z] [INFO] Platform: win32, Architecture: x64
+[2025-09-16T21:29:47.315Z] [INFO] Node version: v22.19.0
+[2025-09-16T21:29:47.315Z] [INFO] Electron version: 38.1.0
+[2025-09-16T21:29:47.316Z] [INFO] Electron ABI: 139
+[2025-09-16T21:29:47.317Z] [INFO] Attempting to load Electron native addon...
+[2025-09-16T21:48:22.283Z] [INFO] Starting native addon loading process...
+[2025-09-16T21:48:22.294Z] [INFO] Platform: win32, Architecture: x64
+[2025-09-16T21:48:22.294Z] [INFO] Node version: v20.19.2
+[2025-09-16T21:48:22.295Z] [INFO] Running in Node.js
+[2025-09-16T21:48:22.296Z] [INFO] Attempting to load Node.js native addon...
+[2025-09-16T21:48:22.402Z] [INFO] ✓ Node.js native addon loaded successfully
+[2025-09-16T21:48:22.402Z] [INFO] ✓ JUCEAudioProcessor class found in native addon
+[2025-09-16 18:48:22] Starting JUCE initialization...
+[2025-09-16 18:48:22] Skipping GUI initialization for Electron compatibility...
+[2025-09-16 18:48:22] Creating JUCEAudioProcessor instance...
+[2025-09-16 18:48:22] JUCEAudioProcessor created successfully
+[2025-09-16 18:48:22] JUCE initialization completed successfully (without GUI)
+[2025-09-16 18:48:22] JUCE already initialized
+[2025-09-16 18:48:22] JUCE already initialized
+[2025-09-16 18:48:22] JUCE already initialized
+[2025-09-16 18:48:22] JUCE already initialized
+[2025-09-16 18:48:22] JUCE already initialized
+[2025-09-16 18:48:22] JUCE already initialized
+[2025-09-16 18:48:22] Setting pitch bend to: 2.000000
+[2025-09-16 18:48:22] Pitch bend set successfully
+[2025-09-16 18:48:22] JUCE already initialized
+[2025-09-16T21:50:45.858Z] [INFO] Starting native addon loading process...
+[2025-09-16T21:50:45.860Z] [INFO] Platform: win32, Architecture: x64
+[2025-09-16T21:50:45.861Z] [INFO] Node version: v22.19.0
+[2025-09-16T21:50:45.862Z] [INFO] Electron version: 38.1.0
+[2025-09-16T21:50:45.862Z] [INFO] Electron ABI: 139
+[2025-09-16T21:50:45.863Z] [INFO] Attempting to load Electron native addon...

@@ -1,5 +1,51 @@
 #include <napi.h>
 #include "juce_audio_processor.h"
+#include <iostream>
+#include <fstream>
+#include <cstdio> // Required for std::put_time
+#include <chrono> // Required for std::chrono
+#include <iomanip>
+
+// Simple logging function - no Napi::Env needed
+void logMessage(const std::string& message) {
+    // Write to file
+    std::ofstream logFile("juce_debug.log", std::ios::app);
+    if (logFile.is_open()) {
+        auto now = std::chrono::system_clock::now();
+        auto time_t = std::chrono::system_clock::to_time_t(now);
+        logFile << "[" << std::put_time(std::localtime(&time_t), "%Y-%m-%d %H:%M:%S") << "] " << message << std::endl;
+        logFile.close();
+    }
+    
+    // Output to console
+    std::cout << "[JUCE DEBUG] " << message << std::endl;
+    std::cerr << "[JUCE DEBUG] " << message << std::endl;
+}
+
+// Enhanced logging function that can also log to JavaScript console
+void logMessage(const std::string& message, Napi::Env env) {
+    // Write to file
+    std::ofstream logFile("juce_debug.log", std::ios::app);
+    if (logFile.is_open()) {
+        auto now = std::chrono::system_clock::now();
+        auto time_t = std::chrono::system_clock::to_time_t(now);
+        logFile << "[" << std::put_time(std::localtime(&time_t), "%Y-%m-%d %H:%M:%S") << "] " << message << std::endl;
+        logFile.close();
+    }
+    
+    // Output to console
+    std::cout << "[JUCE DEBUG] " << message << std::endl;
+    std::cerr << "[JUCE DEBUG] " << message << std::endl;
+    
+    // Also log to JavaScript console if env is available
+    try {
+        Napi::Object console = env.Global().Get("console").As<Napi::Object>();
+        Napi::Function log = console.Get("log").As<Napi::Function>();
+        log.Call({Napi::String::New(env, "[JUCE DEBUG] " + message)});
+    } catch (...) {
+        // Ignore if console logging fails
+    }
+}
 
 class JUCEAudioProcessorWrapper : public Napi::ObjectWrap<JUCEAudioProcessorWrapper>
 {
@@ -85,13 +131,25 @@ JUCEAudioProcessorWrapper::~JUCEAudioProcessorWrapper()
 void JUCEAudioProcessorWrapper::ensureInitialized() {
     if (!isInitialized) {
         try {
-            // Initialize JUCE only when needed
-            juce::initialiseJuce_GUI();
+            logMessage("Starting JUCE initialization...");
+            
+            // Skip GUI initialization entirely for Electron compatibility
+            logMessage("Skipping GUI initialization for Electron compatibility...");
+            
+            // Create processor directly without GUI initialization
+            logMessage("Creating JUCEAudioProcessor instance...");
             processor = new JUCEAudioProcessor();
+            logMessage("JUCEAudioProcessor created successfully");
+            
             isInitialized = true;
+            logMessage("JUCE initialization completed successfully (without GUI)");
+            
         } catch (const std::exception& e) {
+            logMessage("JUCE initialization failed: " + std::string(e.what()));
             throw std::runtime_error("Failed to initialize JUCE: " + std::string(e.what()));
         }
+    } else {
+        logMessage("JUCE already initialized");
     }
 }
 
@@ -105,15 +163,22 @@ Napi::Value JUCEAudioProcessorWrapper::SetPitchBend(const Napi::CallbackInfo& in
     Napi::Env env = info.Env();
     
     if (info.Length() < 1 || !info[0].IsNumber()) {
-        Napi::TypeError::New(env, "Number expected").ThrowAsJavaScriptException();
+        Napi::TypeError::New(env, "Expected a number").ThrowAsJavaScriptException();
         return env.Null();
     }
     
     try {
         ensureInitialized();
         float semitones = info[0].As<Napi::Number>().FloatValue();
+        
+        // Add debug output with env
+        logMessage("Setting pitch bend to: " + std::to_string(semitones), env);
+        
         processor->setPitchBend(semitones);
+        logMessage("Pitch bend set successfully", env);
+        
     } catch (const std::exception& e) {
+        logMessage("Error in setPitchBend: " + std::string(e.what()), env);
         Napi::Error::New(env, "Error in setPitchBend: " + std::string(e.what())).ThrowAsJavaScriptException();
         return env.Null();
     }
