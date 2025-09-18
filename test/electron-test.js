@@ -3,6 +3,13 @@ const JUCEAudioProcessor = require("../index");
 const path = require("path");
 const os = require("os");
 const fs = require("fs");
+const { fork } = require("child_process");
+
+const child = fork("./audio-processor.js");
+
+child.on("message", (msg) => {
+  console.log("Mensagem do processo filho:", msg);
+});
 
 let mainWindow;
 
@@ -69,22 +76,32 @@ function getBinaryPath() {
   }
 }
 
-// Load the native addon
-logMessage("Starting native addon loading process...");
-const nativeAddon = getBinaryPath();
+child.send("iniciar processamento");
 
-// Export the JUCEAudioProcessor class
-if (nativeAddon.JUCEAudioProcessor) {
-  logMessage("✓ JUCEAudioProcessor class found in native addon");
-  module.exports = nativeAddon.JUCEAudioProcessor;
-} else {
-  logMessage("✗ JUCEAudioProcessor not found in native addon exports", "ERROR");
-  logMessage(
-    `Available exports: ${Object.keys(nativeAddon).join(", ")}`,
-    "ERROR"
-  );
-  throw new Error("JUCEAudioProcessor not found in native addon exports");
-}
+process.on("message", (msg) => {
+  if (msg === "iniciar processamento") {
+    // Load the native addon
+    logMessage("Starting native addon loading process...");
+    const nativeAddon = getBinaryPath();
+
+    // Export the JUCEAudioProcessor class
+    if (nativeAddon.JUCEAudioProcessor) {
+      logMessage("✓ JUCEAudioProcessor class found in native addon");
+      module.exports = nativeAddon.JUCEAudioProcessor;
+    } else {
+      logMessage(
+        "✗ JUCEAudioProcessor not found in native addon exports",
+        "ERROR"
+      );
+      logMessage(
+        `Available exports: ${Object.keys(nativeAddon).join(", ")}`,
+        "ERROR"
+      );
+      throw new Error("JUCEAudioProcessor not found in native addon exports");
+    }
+    process.send("processamento concluído");
+  }
+});
 
 function createWindow() {
   mainWindow = new BrowserWindow({

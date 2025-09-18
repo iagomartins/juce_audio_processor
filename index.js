@@ -30,41 +30,26 @@ function getBinaryPath() {
     logMessage(`Electron version: ${process.versions.electron}`);
     logMessage(`Electron ABI: ${process.versions.modules}`);
 
-    // For Electron, try to load the Electron-compiled binary
+    // For Electron, use the child process wrapper
     try {
-      logMessage("Attempting to load Electron native addon...");
-      const electronAddon = require("./build/Release/juce_audio_processor.node");
-      logMessage("✓ Electron native addon loaded successfully");
-      return electronAddon;
+      logMessage("Loading child process wrapper for Electron...");
+      const AudioProcessorWrapper = require("./src/audio-processor-wrapper");
+      logMessage("✓ Child process wrapper loaded successfully");
+      return AudioProcessorWrapper; // Return the wrapper class directly
     } catch (err) {
       logMessage(
-        `✗ Failed to load Electron native addon: ${err.message}`,
+        `✗ Failed to load child process wrapper: ${err.message}`,
         "ERROR"
       );
       logMessage(`Error details: ${err.stack}`, "ERROR");
-
-      // Fallback: try to rebuild for Electron
-      logMessage("Attempting to rebuild for Electron...");
-      try {
-        const { execSync } = require("child_process");
-        execSync("npm run build:electron", { stdio: "inherit" });
-        const electronAddon = require("./build/Release/juce_audio_processor.node");
-        logMessage("✓ Electron native addon rebuilt and loaded successfully");
-        return electronAddon;
-      } catch (rebuildErr) {
-        logMessage(
-          `✗ Failed to rebuild for Electron: ${rebuildErr.message}`,
-          "ERROR"
-        );
-        throw new Error(
-          `Failed to load native addon for Electron ${process.versions.electron}: ${err.message}`
-        );
-      }
+      throw new Error(
+        `Failed to load audio processor for Electron ${process.versions.electron}: ${err.message}`
+      );
     }
   } else {
     logMessage("Running in Node.js");
 
-    // For Node.js, try to load the Node.js-compiled binary
+    // For Node.js, try to load the Node.js-compiled binary directly
     try {
       logMessage("Attempting to load Node.js native addon...");
       const nodeAddon = require("./build/Release/juce_audio_processor.node");
@@ -76,26 +61,49 @@ function getBinaryPath() {
         "ERROR"
       );
       logMessage(`Error details: ${err.stack}`, "ERROR");
-      throw new Error(
-        `Failed to load native addon for Node.js ${process.version}: ${err.message}`
-      );
+
+      // Fallback to mock implementation for Node.js too
+      logMessage("Falling back to mock implementation for Node.js...");
+      try {
+        const MockProcessor = require("./src/audio-processor-mock");
+        logMessage("✓ Mock implementation loaded for Node.js");
+        return { JUCEAudioProcessor: MockProcessor };
+      } catch (mockErr) {
+        logMessage(
+          `✗ Failed to load mock implementation: ${mockErr.message}`,
+          "ERROR"
+        );
+        throw new Error(
+          `Failed to load native addon for Node.js ${process.version}: ${err.message}`
+        );
+      }
     }
   }
 }
 
-// Load the native addon
+// Load the appropriate implementation
 logMessage("Starting native addon loading process...");
 const nativeAddon = getBinaryPath();
 
 // Export the JUCEAudioProcessor class
-if (nativeAddon.JUCEAudioProcessor) {
-  logMessage("✓ JUCEAudioProcessor class found in native addon");
-  module.exports = nativeAddon.JUCEAudioProcessor;
+if (process.versions.electron) {
+  // For Electron, the wrapper class itself is the constructor
+  logMessage("✓ Using child process wrapper for Electron");
+  module.exports = nativeAddon; // Export the wrapper class directly
 } else {
-  logMessage("✗ JUCEAudioProcessor not found in native addon exports", "ERROR");
-  logMessage(
-    `Available exports: ${Object.keys(nativeAddon).join(", ")}`,
-    "ERROR"
-  );
-  throw new Error("JUCEAudioProcessor not found in native addon exports");
+  // For Node.js, check if we have the JUCEAudioProcessor property
+  if (nativeAddon.JUCEAudioProcessor) {
+    logMessage("✓ JUCEAudioProcessor class found in native addon");
+    module.exports = nativeAddon.JUCEAudioProcessor;
+  } else {
+    logMessage(
+      "✗ JUCEAudioProcessor not found in native addon exports",
+      "ERROR"
+    );
+    logMessage(
+      `Available exports: ${Object.keys(nativeAddon).join(", ")}`,
+      "ERROR"
+    );
+    throw new Error("JUCEAudioProcessor not found in native addon exports");
+  }
 }

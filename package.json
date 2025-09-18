@@ -1,6 +1,6 @@
 {
   "name": "juce-audio-processor",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "JUCE audio processor native addon for Node.js applications",
   "main": "index.js",
   "keywords": [
@@ -32,12 +32,13 @@
   "scripts": {
     "build": "npm run build:node && npm run build:electron",
     "build:node": "cmake-js build --runtime node --runtime-version 18.0.0",
-    "build:electron": "electron-rebuild",
+    "build:electron": "cmake-js build --runtime electron --runtime-version 38.1.0",
     "install": "npm run build:auto",
     "rebuild": "cmake-js rebuild",
     "prepublishOnly": "npm run build",
     "test": "node test/test.js",
     "test:electron": "npx electron test/electron-test.js",
+    "test:electron-mock": "npx electron test/electron-mock-test.js",
     "example": "node example/node-example.js",
     "clean": "rimraf build",
     "build:auto": "node scripts/build-auto.js"
