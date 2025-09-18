@@ -32,6 +32,18 @@ function detectRuntime() {
   };
 }
 
+function checkBuildTools() {
+  try {
+    // Check if CMake is available
+    execSync("cmake --version", { stdio: "ignore" });
+    logMessage("✓ CMake found");
+    return true;
+  } catch (error) {
+    logMessage("⚠ CMake not found - native addon will not be built", "WARN");
+    return false;
+  }
+}
+
 function buildForRuntime(runtime, version) {
   logMessage(`Building for ${runtime} ${version}...`);
 
@@ -65,61 +77,75 @@ function buildForRuntime(runtime, version) {
 function main() {
   logMessage("Auto-detecting runtime...");
 
+  // Check if build tools are available first
+  if (!checkBuildTools()) {
+    logMessage(
+      "⚠ Build tools not available, skipping native addon build",
+      "WARN"
+    );
+    logMessage("The package will work with mock implementation only", "INFO");
+    logMessage(
+      "To enable native addon, install CMake and run: npm run rebuild",
+      "INFO"
+    );
+    return;
+  }
+
   const runtimeInfo = detectRuntime();
   logMessage(`Detected: ${runtimeInfo.runtime} ${runtimeInfo.version}`);
 
   // Try to build for the detected runtime
   if (buildForRuntime(runtimeInfo.runtime, runtimeInfo.version)) {
     logMessage("✓ Build completed successfully");
-    process.exit(0);
-  } else {
-    logMessage("⚠ Build failed, trying fallback versions...", "WARN");
-
-    // Try different versions as fallback
-    const fallbackVersions = {
-      electron: ["38.1.0", "37.4.0", "37.3.1", "37.0.0", "36.0.0"],
-      node: ["20.0.0", "18.0.0", "16.0.0", "14.0.0"],
-    };
-
-    const versions =
-      fallbackVersions[runtimeInfo.runtime] || fallbackVersions.node;
-
-    for (const version of versions) {
-      logMessage(`Trying ${runtimeInfo.runtime} ${version} fallback...`);
-      if (buildForRuntime(runtimeInfo.runtime, version)) {
-        logMessage("✓ Fallback build completed");
-        process.exit(0);
-      }
-    }
-
-    // If all fallbacks fail, try the other runtime
-    const otherRuntime =
-      runtimeInfo.runtime === "electron" ? "node" : "electron";
-    logMessage(`Trying ${otherRuntime} as last resort...`);
-
-    const otherVersions = fallbackVersions[otherRuntime];
-    for (const version of otherVersions) {
-      logMessage(`Trying ${otherRuntime} ${version}...`);
-      if (buildForRuntime(otherRuntime, version)) {
-        logMessage("✓ Alternative runtime build completed");
-        process.exit(0);
-      }
-    }
-
-    logMessage("✗ All build attempts failed", "ERROR");
-    logMessage("Please check:", "ERROR");
-    logMessage("1. CMake is installed and in PATH", "ERROR");
-    logMessage("2. Visual Studio Build Tools are installed (Windows)", "ERROR");
-    logMessage("3. Xcode Command Line Tools are installed (macOS)", "ERROR");
-    logMessage("4. Build essentials are installed (Linux)", "ERROR");
-    logMessage("5. JUCE framework is installed", "ERROR");
-    logMessage("6. Node.js version is compatible", "ERROR");
-    process.exit(1);
+    return;
   }
+
+  logMessage("⚠ Build failed, trying fallback versions...", "WARN");
+
+  // Try different versions as fallback
+  const fallbackVersions = {
+    electron: ["38.1.0", "37.4.0", "37.3.1", "37.0.0", "36.0.0"],
+    node: ["20.0.0", "18.0.0", "16.0.0", "14.0.0"],
+  };
+
+  const versions =
+    fallbackVersions[runtimeInfo.runtime] || fallbackVersions.node;
+
+  for (const version of versions) {
+    logMessage(`Trying ${runtimeInfo.runtime} ${version} fallback...`);
+    if (buildForRuntime(runtimeInfo.runtime, version)) {
+      logMessage("✓ Fallback build completed");
+      return;
+    }
+  }
+
+  // If all fallbacks fail, try the other runtime
+  const otherRuntime = runtimeInfo.runtime === "electron" ? "node" : "electron";
+  logMessage(`Trying ${otherRuntime} as last resort...`);
+
+  const otherVersions = fallbackVersions[otherRuntime];
+  for (const version of otherVersions) {
+    logMessage(`Trying ${otherRuntime} ${version}...`);
+    if (buildForRuntime(otherRuntime, version)) {
+      logMessage("✓ Alternative runtime build completed");
+      return;
+    }
+  }
+
+  logMessage("⚠ All build attempts failed, using mock implementation", "WARN");
+  logMessage("The package will work but with reduced performance", "WARN");
+  logMessage("To fix this, ensure:", "INFO");
+  logMessage("1. CMake is installed and in PATH", "INFO");
+  logMessage("2. Visual Studio Build Tools are installed (Windows)", "INFO");
+  logMessage("3. Xcode Command Line Tools are installed (macOS)", "INFO");
+  logMessage("4. Build essentials are installed (Linux)", "INFO");
+  logMessage("5. JUCE framework is installed", "INFO");
+  logMessage("6. Node.js version is compatible", "INFO");
+  logMessage("Then run: npm run rebuild", "INFO");
 }
 
 if (require.main === module) {
   main();
 }
 
-module.exports = { detectRuntime, buildForRuntime };
+module.exports = { detectRuntime, buildForRuntime, checkBuildTools };
